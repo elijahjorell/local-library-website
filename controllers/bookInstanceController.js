@@ -96,10 +96,13 @@ exports.bookinstance_create_post = function(req, res) {
 // Display BookInstance delete form on GET.
 exports.bookinstance_delete_get = async function(req, res, next) {
 
-    const bookinstance = await BookInstance.findById(req.params.id).catch(err => { return next(err); });
-
-    if (bookinstance) {
+    try {
+        const bookinstance = await BookInstance.findById(req.params.id)
+            .populate('book');
         res.render('bookinstance_delete', { title: 'Delete Book Instance', bookinstance: bookinstance});
+    }
+    catch(err) {
+        return next(err);
     }
 
 };
@@ -107,10 +110,12 @@ exports.bookinstance_delete_get = async function(req, res, next) {
 // Handle BookInstance delete on POST.
 exports.bookinstance_delete_post = async function(req, res, next) {
     
-    const bookinstance = await BookInstance.findByIdAndDelete(req.body.bookinstanceid).catch(err => { return next(err); });
-
-    if (bookinstance) {
+    try {
+        const bookinstance = await BookInstance.findByIdAndDelete(req.body.bookinstanceid)
         res.redirect('/catalog/bookinstances');
+    }
+    catch(err) {
+        return next(err);
     }
 
 };
